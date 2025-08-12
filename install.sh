@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 你的 GitHub 直链（替换成自己的仓库地址）
-GITHUB_URL="https://raw.githubusercontent.com/iu683/vps-tools/main/vps-tools.sh"
+GITHUB_URL="https://raw.githubusercontent.com/csyad/vps-toolbox/main/vps-toolbox.sh"
 
 # 安装快捷启动 m
 if [[ ! -f /usr/local/bin/m ]]; then
@@ -12,3 +12,4 @@ if [[ ! -f /usr/local/bin/m ]]; then
 else
     echo "m 已存在，跳过安装"
 fi
+
