@@ -4,23 +4,12 @@ INSTALL_PATH="$HOME/vps-toolbox.sh"
 SHORTCUT_PATH="/usr/local/bin/m"
 
 green="\033[32m"
-yellow="\033[33m"
 reset="\033[0m"
+yellow="\033[33m"
 
-rainbow_border() {
-    local text="$1"
-    local colors=(31 33 32 36 34 35)
-    local output=""
-    local i=0
-    for (( c=0; c<${#text}; c++ )); do
-        output+="\033[${colors[$i]}m${text:$c:1}"
-        ((i=(i+1)%${#colors[@]}))
-    done
-    echo -e "$output${reset}"
-}
-
+# 内存/磁盘/CPU 使用情况显示，黄色边框，36宽度紧凑版
 show_system_usage() {
-    local width=42
+    local width=36
 
     mem_used=$(free -m | awk '/Mem:/ {print $3}')
     mem_total=$(free -m | awk '/Mem:/ {print $2}')
@@ -38,16 +27,29 @@ show_system_usage() {
     }
 
     echo -e "${yellow}┌$(printf '─%.0s' $(seq 1 $width))┐${reset}"
-    echo -e "${yellow}│$(pad_string "  📊 内存使用：已用: ${mem_used}Mi / 总: ${mem_total}Mi")│${reset}"
-    echo -e "${yellow}│$(pad_string "  💽 磁盘使用：${disk_used_percent} 已用 / 总: ${disk_total}")│${reset}"
-    echo -e "${yellow}│$(pad_string "  ⚙️ CPU 使用率：${cpu_usage}%")│${reset}"
+    echo -e "${yellow}│$(pad_string "📊 内存：${mem_used}Mi/${mem_total}Mi")│${reset}"
+    echo -e "${yellow}│$(pad_string "💽 磁盘：${disk_used_percent} 用 / 总 ${disk_total}")│${reset}"
+    echo -e "${yellow}│$(pad_string "⚙️ CPU：${cpu_usage}%")│${reset}"
     echo -e "${yellow}└$(printf '─%.0s' $(seq 1 $width))┘${reset}"
     echo
+}
+
+rainbow_border() {
+    local text="$1"
+    local colors=(31 33 32 36 34 35)
+    local output=""
+    local i=0
+    for (( c=0; c<${#text}; c++ )); do
+        output+="\033[${colors[$i]}m${text:$c:1}"
+        ((i=(i+1)%${#colors[@]}))
+    done
+    echo -e "$output${reset}"
 }
 
 show_menu() {
     clear
     show_system_usage
+
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     rainbow_border "    📦 服务器工具箱 📦"
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
