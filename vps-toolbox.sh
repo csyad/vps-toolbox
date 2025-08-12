@@ -3,41 +3,11 @@
 INSTALL_PATH="$HOME/vps-toolbox.sh"
 SHORTCUT_PATH="/usr/local/bin/m"
 
-yellow="\033[33m"
+green="\033[32m"
 reset="\033[0m"
+yellow="\033[33m"
 
-# 计算字符串宽度，中文和emoji算2宽，ASCII算1宽
-str_width() {
-    local s="$1"
-    local -i width=0
-    local i=0
-    local c
-    while (( i < ${#s} )); do
-        c="${s:i:1}"
-        # 简单判断中文范围
-        if [[ "$c" =~ [\u4e00-\u9fff] ]]; then
-            ((width+=2))
-        elif [[ "$c" =~ [\x00-\x7F] ]]; then
-            ((width+=1))
-        else
-            ((width+=2))
-        fi
-        ((i++))
-    done
-    echo $width
-}
-
-# 补齐字符串，使其显示宽度达到指定宽度
-pad_string() {
-    local str="$1"
-    local width_target=$2
-    local str_len
-    str_len=$(str_width "$str")
-    local pad_len=$((width_target - str_len))
-    if (( pad_len < 0 )); then pad_len=0; fi
-    printf "%s%*s" "$str" "$pad_len" ""
-}
-
+# 内存/磁盘/CPU 使用情况显示，黄色上下面框，无左右边框
 show_system_usage() {
     local width=36
 
@@ -47,10 +17,15 @@ show_system_usage() {
     disk_total=$(df -h / | awk 'NR==2 {print $2}')
     cpu_usage=$(top -bn2 | grep "Cpu(s)" | tail -n1 | awk -F'id,' '{print 100 - $1}' | awk '{printf "%.1f", $1}')
 
+    pad_string() {
+        local str="$1"
+        printf "%-${width}s" "$str"
+    }
+
     echo -e "${yellow}┌$(printf '─%.0s' $(seq 1 $width))┐${reset}"
-    echo -e "${yellow}│$(pad_string "📊 内存：${mem_used}Mi/${mem_total}Mi" $width)│${reset}"
-    echo -e "${yellow}│$(pad_string "💽 磁盘：${disk_used_percent} 用 / 总 ${disk_total}" $width)│${reset}"
-    echo -e "${yellow}│$(pad_string "⚙ CPU：${cpu_usage}%" $width)│${reset}"
+    echo -e "${yellow}$(pad_string "📊 内存：${mem_used}Mi/${mem_total}Mi")${reset}"
+    echo -e "${yellow}$(pad_string "💽 磁盘：${disk_used_percent} 用 / 总 ${disk_total}")${reset}"
+    echo -e "${yellow}$(pad_string "⚙ CPU：${cpu_usage}%")${reset}"
     echo -e "${yellow}└$(printf '─%.0s' $(seq 1 $width))┘${reset}"
     echo
 }
@@ -70,10 +45,11 @@ rainbow_border() {
 show_menu() {
     clear
     show_system_usage
+
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     rainbow_border "    📦 服务器工具箱 📦"
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo -e "${yellow}"
+    echo -e "${green}"
     echo -e "
   1. 更新源                  2. 更新curl
   3. 哪吒压缩包              4. 卸载哪吒探针
@@ -183,22 +159,6 @@ execute_choice() {
             echo "无效选项"
             ;;
     esac
-}
-
-install_shortcut() {
-    echo "创建快捷指令 m"
-    local script_path
-    script_path=$(realpath "$0")
-    echo "#!/bin/bash" | sudo tee "$SHORTCUT_PATH" >/dev/null
-    echo "bash \"$script_path\"" | sudo tee -a "$SHORTCUT_PATH" >/dev/null
-    sudo chmod +x "$SHORTCUT_PATH"
-}
-
-remove_shortcut() {
-    if [ -f "$SHORTCUT_PATH" ]; then
-        echo "删除快捷指令 m"
-        sudo rm -f "$SHORTCUT_PATH"
-    fi
 }
 
 while true; do
