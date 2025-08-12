@@ -4,6 +4,7 @@ INSTALL_PATH="$HOME/vps-toolbox.sh"
 SHORTCUT_PATH="/usr/local/bin/m"
 
 green="\033[32m"
+yellow="\033[33m"
 reset="\033[0m"
 
 rainbow_border() {
@@ -19,8 +20,7 @@ rainbow_border() {
 }
 
 show_system_usage() {
-    local yellow="\033[33m"
-    local reset="\033[0m"
+    local width=42
 
     mem_used=$(free -m | awk '/Mem:/ {print $3}')
     mem_total=$(free -m | awk '/Mem:/ {print $2}')
@@ -28,19 +28,19 @@ show_system_usage() {
     disk_total=$(df -h / | awk 'NR==2 {print $2}')
     cpu_usage=$(top -bn2 | grep "Cpu(s)" | tail -n1 | awk -F'id,' '{print 100 - $1}' | awk '{printf "%.1f", $1}')
 
-    local width=42
-
-    center_text() {
-        local text="$1"
-        local padding=$(( (width - ${#text}) / 2 ))
-        local extra=$(( (width - ${#text}) % 2 ))
-        printf "%*s%s%*s" $padding "" "$text" $((padding + extra)) ""
+    pad_string() {
+        local str="$1"
+        local pad_len=$((width - ${#str}))
+        if (( pad_len < 0 )); then
+            pad_len=0
+        fi
+        printf "%s%*s" "$str" "$pad_len" ""
     }
 
     echo -e "${yellow}┌$(printf '─%.0s' $(seq 1 $width))┐${reset}"
-    echo -e "${yellow}│$(center_text "📊 内存使用：已用: ${mem_used}Mi / 总: ${mem_total}Mi")│${reset}"
-    echo -e "${yellow}│$(center_text "💽 磁盘使用：${disk_used_percent} 已用 / 总: ${disk_total}")│${reset}"
-    echo -e "${yellow}│$(center_text "⚙️ CPU 使用率：${cpu_usage}%")│${reset}"
+    echo -e "${yellow}│$(pad_string "  📊 内存使用：已用: ${mem_used}Mi / 总: ${mem_total}Mi")│${reset}"
+    echo -e "${yellow}│$(pad_string "  💽 磁盘使用：${disk_used_percent} 已用 / 总: ${disk_total}")│${reset}"
+    echo -e "${yellow}│$(pad_string "  ⚙️ CPU 使用率：${cpu_usage}%")│${reset}"
     echo -e "${yellow}└$(printf '─%.0s' $(seq 1 $width))┘${reset}"
     echo
 }
