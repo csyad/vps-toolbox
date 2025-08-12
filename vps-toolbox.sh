@@ -7,7 +7,7 @@ green="\033[32m"
 reset="\033[0m"
 yellow="\033[33m"
 
-# 内存/磁盘/CPU 使用情况显示，黄色上下面框，无左右边框
+# 内存/磁盘/CPU 使用情况显示，黄色边框，36宽度内容右对齐版
 show_system_usage() {
     local width=36
 
@@ -19,7 +19,7 @@ show_system_usage() {
 
     pad_string() {
         local str="$1"
-        printf "%-${width}s" "$str"
+        printf "%${width}s" "$str"
     }
 
     echo -e "${yellow}┌$(printf '─%.0s' $(seq 1 $width))┐${reset}"
