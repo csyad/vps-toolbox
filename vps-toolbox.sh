@@ -1,5 +1,4 @@
 #!/bin/bash
-
 INSTALL_PATH="$HOME/vps-toolbox.sh"
 SHORTCUT_PATH="/usr/local/bin/m"
 
@@ -8,10 +7,8 @@ reset="\033[0m"
 yellow="\033[33m"
 red="\033[31m"
 
-# 只启动时显示一次系统资源状态
 show_system_usage() {
     local width=36
-
     mem_used=$(free -m | awk '/Mem:/ {print $3}')
     mem_total=$(free -m | awk '/Mem:/ {print $2}')
     disk_used_percent=$(df -h / | awk 'NR==2 {print $5}')
@@ -45,9 +42,7 @@ rainbow_border() {
 
 show_menu() {
     clear
-    # 启动时只显示一次，菜单不再重复显示系统状态
-    # show_system_usage
-
+    # 注意这里不要调用 show_system_usage，避免重复显示
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     rainbow_border "    📦 服务器工具箱 📦"
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -120,9 +115,6 @@ remove_shortcut() {
     fi
 }
 
-# 显示一次系统资源，启动时
-show_system_usage
-
 execute_choice() {
     case "$1" in
         1) sudo apt update ;;
@@ -187,12 +179,10 @@ execute_choice() {
     esac
 }
 
-# 启动安装快捷指令检测
 if [ ! -f "$SHORTCUT_PATH" ]; then
     install_shortcut
 fi
 
-# 启动时显示一次系统状态
 show_system_usage
 
 while true; do
