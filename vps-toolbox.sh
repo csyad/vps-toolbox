@@ -1,136 +1,204 @@
 #!/bin/bash
 
-# 颜色定义
-RED="\033[31m"
-GREEN="\033[32m"
-RESET="\033[0m"
+INSTALL_PATH="$HOME/vps-toolbox.sh"
+SHORTCUT_PATH="/usr/local/bin/m"
 
-# 📊 系统状态信息（只显示一次）
-show_system_info() {
+green="\033[32m"
+reset="\033[0m"
+yellow="\033[33m"
+red="\033[31m"
+
+# 只启动时显示一次系统资源状态
+show_system_usage() {
+    local width=36
+
     mem_used=$(free -m | awk '/Mem:/ {print $3}')
     mem_total=$(free -m | awk '/Mem:/ {print $2}')
-    disk_used=$(df -h / | awk 'NR==2 {print $5}')
+    disk_used_percent=$(df -h / | awk 'NR==2 {print $5}')
     disk_total=$(df -h / | awk 'NR==2 {print $2}')
-    cpu_usage=$(top -bn1 | grep "Cpu(s)" | awk '{print 100 - $8}')
-    cpu_usage=$(printf "%.1f" "$cpu_usage")
+    cpu_usage=$(top -bn2 | grep "Cpu(s)" | tail -n1 | awk -F'id,' '{print 100 - $1}' | awk '{printf "%.1f", $1}')
 
-    echo "┌────────────────────────────────────┐"
-    printf "📊 内存：%sMi/%sMi\n" "$mem_used" "$mem_total"
-    printf "💽 磁盘：%s 用 / 总 %s\n" "$disk_used" "$disk_total"
-    printf "⚙ CPU：%s%%\n" "$cpu_usage"
-    echo "└────────────────────────────────────┘"
+    pad_string() {
+        local str="$1"
+        printf "%${width}s" "$str"
+    }
+
+    echo -e "${yellow}┌$(printf '─%.0s' $(seq 1 $width))┐${reset}"
+    echo -e "${yellow}$(pad_string "📊 内存：${mem_used}Mi/${mem_total}Mi")${reset}"
+    echo -e "${yellow}$(pad_string "💽 磁盘：${disk_used_percent} 用 / 总 ${disk_total}")${reset}"
+    echo -e "${yellow}$(pad_string "⚙ CPU：${cpu_usage}%")${reset}"
+    echo -e "${yellow}└$(printf '─%.0s' $(seq 1 $width))┘${reset}"
+    echo
 }
 
-# 菜单显示
+rainbow_border() {
+    local text="$1"
+    local colors=(31 33 32 36 34 35)
+    local output=""
+    local i=0
+    for (( c=0; c<${#text}; c++ )); do
+        output+="\033[${colors[$i]}m${text:$c:1}"
+        ((i=(i+1)%${#colors[@]}))
+    done
+    echo -e "$output${reset}"
+}
+
 show_menu() {
-    echo -e "${RED}【系统设置】${RESET}"
-    echo -e "${GREEN}1. 更新源                  2. 更新curl${RESET}"
-    echo -e "${GREEN}3. 本机信息                4. DDNS${RESET}"
-    echo -e "${GREEN}5. 临时禁用IPv6            6. 添加SWAP${RESET}"
-    echo -e "${GREEN}7. TCP窗口调优             8. 安装Python${RESET}"
-    echo -e "${GREEN}9. 自定义DNS解锁           10. DDWin10${RESET}"
+    clear
+    # 启动时只显示一次，菜单不再重复显示系统状态
+    # show_system_usage
 
-    echo -e "${RED}【哪吒相关】${RESET}"
-    echo -e "${GREEN}11. 哪吒压缩包             12. 卸载哪吒探针${RESET}"
-    echo -e "${GREEN}13. v1关SSH                14. v0关SSH${RESET}"
-    echo -e "${GREEN}15. V0哪吒${RESET}"
+    rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    rainbow_border "    📦 服务器工具箱 📦"
+    rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo -e "
+  ${red}【系统设置】${reset}
+  ${green}1. 更新源                  2. 更新curl
+  7. DDNS                    28. 本机信息
+  29. DDWin10                36. 临时禁用IPv6
+  37. 添加SWAP               38. TCP窗口调优
+  41. 安装Python             42. 自定义DNS解锁${reset}
 
-    echo -e "${RED}【工具箱】${RESET}"
-    echo -e "${GREEN}16. 老王工具箱             17. 科技lion${RESET}"
-    echo -e "${GREEN}18. 服务器优化             19. VPS Toolkit${RESET}"
-    echo -e "${GREEN}20. 一点科技${RESET}"
+  ${red}【哪吒相关】${reset}
+  ${green}3. 哪吒压缩包              4. 卸载哪吒探针
+  5. v1关SSH                 6. v0关SSH
+  16. V0哪吒${reset}
 
-    echo -e "${RED}【代理工具】${RESET}"
-    echo -e "${GREEN}21. HY2                   22. 3XUI${RESET}"
-    echo -e "${GREEN}23. SNELL                 24. 国外EZRealm${RESET}"
-    echo -e "${GREEN}25. 国内EZRealm           26. 3x-ui-alpines${RESET}"
-    echo -e "${GREEN}27. gost                  28. WARP${RESET}"
+  ${red}【面板相关】${reset}
+  ${green}19. 宝塔面板               20. 1panel面板
+  22. 宝塔开心版             40. 极光面板
+  48. 哆啦A梦转发面板${reset}
 
-    echo -e "${RED}【应用商店】${RESET}"
-    echo -e "${GREEN}29. WEBSSH                30. Poste.io 邮局${RESET}"
-    echo -e "${GREEN}31. Sub-Store             32. OpenList${RESET}"
+  ${red}【代理】${reset}
+  ${green}8. HY2                     9. 3XUI
+  12. WARP                   13. SNELL
+  14. 国外EZRealm            15. 国内EZRealm
+  35. 3x-ui-alpines          39. gost${reset}
 
-    echo -e "${RED}【面板管理】${RESET}"
-    echo -e "${GREEN}33. 极光面板               34. 哆啦A梦转发面板${RESET}"
+  ${red}【网络解锁】${reset}
+  ${green}23. IP解锁-IPv4            24. IP解锁-IPv6
+  25. 网络质量-IPv4          26. 网络质量-IPv6
+  27. NodeQuality脚本
+  32. 流媒体解锁             33. 融合怪测试${reset}
 
-    echo -e "${RED}【网络解锁】${RESET}"
-    echo -e "${GREEN}35. 流媒体解锁             36. 融合怪测试${RESET}"
-    echo -e "${GREEN}37. IP解锁-IPv4            38. IP解锁-IPv6${RESET}"
-    echo -e "${GREEN}39. 网络质量-IPv4          40. 网络质量-IPv6${RESET}"
-    echo -e "${GREEN}41. NodeQuality脚本${RESET}"
+  ${red}【应用商店】${reset}
+  ${green}18. Sub-Store              21. WEBSSH
+  30. Poste.io 邮局          47. OpenList${reset}
 
-    echo -e "${RED}【Docker工具】${RESET}"
-    echo -e "${GREEN}42. 安装 Docker Compose    43. Docker备份和恢复${RESET}"
-    echo -e "${GREEN}44. Docker容器迁移${RESET}"
+  ${red}【工具箱】${reset}
+  ${green}10. 老王工具箱             11. 科技lion
+  17. 一点科技               31. 服务器优化
+  45. VPS Toolkit${reset}
 
-    echo -e "${RED}【证书工具】${RESET}"
-    echo -e "${GREEN}45. NGINX反代${RESET}"
+  ${red}【Docker工具】${reset}
+  ${green}34. 安装 Docker Compose    43. Docker备份和恢复
+  44. Docker容器迁移${reset}
 
-    echo -e "${GREEN}99. 卸载工具箱             0. 退出${RESET}"
+  ${red}【证书工具】${reset}
+  ${green}46. NGINX反代${reset}
+
+  ${red}【其他】${reset}
+  ${green}99. 卸载工具箱             0. 退出${reset}
+"
+    rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo -e "${reset}"
 }
 
-# 执行功能
-run_option() {
+install_shortcut() {
+    echo "创建快捷指令 m"
+    local script_path
+    script_path=$(realpath "$0")
+    echo "#!/bin/bash" | sudo tee "$SHORTCUT_PATH" >/dev/null
+    echo "bash \"$script_path\"" | sudo tee -a "$SHORTCUT_PATH" >/dev/null
+    sudo chmod +x "$SHORTCUT_PATH"
+}
+
+remove_shortcut() {
+    if [ -f "$SHORTCUT_PATH" ]; then
+        echo "删除快捷指令 m"
+        sudo rm -f "$SHORTCUT_PATH"
+    fi
+}
+
+# 显示一次系统资源，启动时
+show_system_usage
+
+execute_choice() {
     case "$1" in
         1) sudo apt update ;;
         2) sudo apt install curl -y ;;
-        3) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/get_sysinfo.sh) ;;
-        4) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/ddns.sh) ;;
-        5) sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1 ;;
-        6) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/add_swap.sh) ;;
-        7) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/tcp_tune.sh) ;;
-        8) sudo apt install python3 -y ;;
-        9) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/custom_dns_unlock.sh) ;;
-        10) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/dd_win10.sh) ;;
-        11) apt install unzip -y ;;
-        12) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/uninstall_nezha.sh) ;;
-        13) echo "执行 v1 关SSH脚本" ;;
-        14) echo "执行 v0 关SSH脚本" ;;
-        15) echo "执行 V0哪吒安装脚本" ;;
-        16) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/laowang_tool.sh) ;;
-        17) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/kejilion.sh) ;;
-        18) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/server_optimize.sh) ;;
-        19) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/vps_toolkit.sh) ;;
-        20) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/yidian_keji.sh) ;;
-        21) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/hy2.sh) ;;
-        22) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/3xui.sh) ;;
-        23) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/snell.sh) ;;
-        24) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/ezrealm_foreign.sh) ;;
-        25) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/ezrealm_cn.sh) ;;
-        26) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/3xui_alpine.sh) ;;
-        27) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/gost.sh) ;;
-        28) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/warp.sh) ;;
-        29) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/webssh.sh) ;;
-        30) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/posteio.sh) ;;
-        31) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/substore.sh) ;;
-        32) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/openlist.sh) ;;
-        33) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/aurora_panel.sh) ;;
-        34) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/doraemon_panel.sh) ;;
-        35) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/media_unlock.sh) ;;
-        36) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/fusion_test.sh) ;;
-        37) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/ip_unlock_ipv4.sh) ;;
-        38) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/ip_unlock_ipv6.sh) ;;
-        39) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/net_quality_ipv4.sh) ;;
-        40) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/net_quality_ipv6.sh) ;;
-        41) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/nodequality.sh) ;;
-        42) sudo apt install docker-compose -y ;;
-        43) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/docker_backup.sh) ;;
-        44) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/docker_migrate.sh) ;;
-        45) bash <(curl -fsSL https://raw.githubusercontent.com/xxx/nginx_proxy.sh) ;;
-        99) rm -f "$0" && echo "工具箱已卸载" && exit ;;
-        0) exit ;;
-        *) echo "无效选项，请重新输入" ;;
+        3) sudo apt install unzip -y ;;
+        4) bash <(curl -fsSL https://raw.githubusercontent.com/SimonGino/Config/master/sh/uninstall_nezha_agent.sh) ;;
+        5) sed -i 's/disable_command_execute: false/disable_command_execute: true/' /opt/nezha/agent/config.yml && systemctl restart nezha-agent ;;
+        6) sed -i 's|^ExecStart=.*|& --disable-command-execute --disable-auto-update --disable-force-update|' /etc/systemd/system/nezha-agent.service && systemctl daemon-reload && systemctl restart nezha-agent ;;
+        7) bash <(wget -qO- https://raw.githubusercontent.com/mocchen/cssmeihua/mochen/shell/ddns.sh) ;;
+        8) wget -N --no-check-certificate https://raw.githubusercontent.com/flame1ce/hysteria2-install/main/hysteria2-install-main/hy2/hysteria.sh && bash hysteria.sh ;;
+        9) bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh) ;;
+        10) curl -fsSL https://raw.githubusercontent.com/eooce/ssh_tool/main/ssh_tool.sh -o ssh_tool.sh && chmod +x ssh_tool.sh && ./ssh_tool.sh ;;
+        11) curl -sS -O https://kejilion.pro/kejilion.sh && chmod +x kejilion.sh && ./kejilion.sh ;;
+        12) wget -N https://gitlab.com/fscarmen/warp/-/raw/main/menu.sh && bash menu.sh ;;
+        13) bash <(curl -L -s menu.jinqians.com) ;;
+        14) wget -N https://raw.githubusercontent.com/shiyi11yi/EZRealm/main/realm.sh && chmod +x realm.sh && ./realm.sh ;;
+        15) wget -N https://raw.githubusercontent.com/shiyi11yi/EZRealm/main/CN/realm.sh && chmod +x realm.sh && ./realm.sh ;;
+        16) bash <(wget -qO- https://raw.githubusercontent.com/fscarmen2/Argo-Nezha-Service-Container/main/dashboard.sh) ;;
+        17) wget -O 1keji.sh "https://www.1keji.net" && chmod +x 1keji.sh && ./1keji.sh ;;
+        18) docker run -it -d --restart=always -e "SUB_STORE_CRON=0 0 * * *" -e SUB_STORE_FRONTEND_BACKEND_PATH=/2cXaAxRGfddmGz2yx1wA -p 3001:3001 -v /root/sub-store-data:/opt/app/data --name sub-store xream/sub-store ;;
+        19) if [ -f /usr/bin/curl ]; then curl -sSO https://download.bt.cn/install/install_panel.sh; else wget -O install_panel.sh https://download.bt.cn/install/install_panel.sh; fi; bash install_panel.sh ed8484bec ;;
+        20) bash -c "$(curl -sSL https://resource.fit2cloud.com/1panel/package/v2/quick_start.sh)" ;;
+        21) docker run -d --name webssh --restart always -p 8888:8888 cmliu/webssh:latest ;;
+        22) if [ -f /usr/bin/curl ]; then curl -sSO http://bt95.btkaixin.net/install/install_panel.sh; else wget -O install_panel.sh http://bt95.btkaixin.net/install/install_panel.sh; fi; bash install_panel.sh www.BTKaiXin.com ;;
+        23) bash <(curl -Ls https://IP.Check.Place) -4 ;;
+        24) bash <(curl -Ls https://IP.Check.Place) -6 ;;
+        25) bash <(curl -Ls https://Net.Check.Place) -4 ;;
+        26) bash <(curl -Ls https://Net.Check.Place) -6 ;;
+        27) bash <(curl -sL https://run.NodeQuality.com) ;;
+        28) bash <(curl -fsSL https://raw.githubusercontent.com/iu683/vps-tools/main/vpsinfo.sh) ;;
+        29) bash <(curl -sSL https://raw.githubusercontent.com/leitbogioro/Tools/master/Linux_reinstall/InstallNET.sh) -windows 10 -lang "cn" ;;
+        30) curl -sS -O https://raw.githubusercontent.com/woniu336/open_shell/main/poste_io.sh && chmod +x poste_io.sh && ./poste_io.sh ;;
+        31) bash <(curl -sL ss.hide.ss) ;;
+        32) bash <(curl -L -s https://raw.githubusercontent.com/lmc999/RegionRestrictionCheck/main/check.sh) ;;
+        33) curl -L https://gitlab.com/spiritysdx/za/-/raw/main/ecs.sh -o ecs.sh && chmod +x ecs.sh && bash ecs.sh ;;
+        34) sudo apt install docker-compose-plugin -y ;;
+        35) apk add curl bash gzip openssl && bash <(curl -Ls https://raw.githubusercontent.com/StarVM-OpenSource/3x-ui-Apline/refs/heads/main/install.sh) ;;
+        36) sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1 ;;
+        37) wget https://www.moerats.com/usr/shell/swap.sh && bash swap.sh ;;
+        38) wget http://sh.nekoneko.cloud/tools.sh -O tools.sh && bash tools.sh ;;
+        39) wget --no-check-certificate -O gost.sh https://raw.githubusercontent.com/qqrrooty/EZgost/main/gost.sh && chmod +x gost.sh && ./gost.sh ;;
+        40) bash <(curl -fsSL https://raw.githubusercontent.com/Aurora-Admin-Panel/deploy/main/install.sh) ;;
+        41) curl -O https://raw.githubusercontent.com/lx969788249/lxspacepy/master/pyinstall.sh && chmod +x pyinstall.sh && ./pyinstall.sh ;;
+        42) bash <(curl -sL https://raw.githubusercontent.com/iu683/vps-tools/main/media_dns.sh) ;;
+        43) curl -fsSL https://raw.githubusercontent.com/xymn2023/DMR/main/docker_back.sh -o docker_back.sh && chmod +x docker_back.sh && ./docker_back.sh ;;
+        44) curl -O https://raw.githubusercontent.com/ceocok/Docker_container_migration/refs/heads/main/Docker_container_migration.sh && chmod +x Docker_container_migration.sh && ./Docker_container_migration.sh ;;
+        45) bash <(curl -sSL https://raw.githubusercontent.com/zeyu8023/vps_toolkit/main/install.sh) ;;
+        46) bash <(curl -sL kejilion.sh) fd ;;
+        47) curl -fsSL https://res.oplist.org/script/v4.sh > install-openlist-v4.sh && sudo bash install-openlist-v4.sh ;;
+        48) curl -L https://raw.githubusercontent.com/bqlpfy/forward-panel/refs/heads/main/panel_install.sh -o panel_install.sh && chmod +x panel_install.sh && ./panel_install.sh ;;
+        99)
+            echo "卸载工具箱..."
+            rm -f "$INSTALL_PATH"
+            remove_shortcut
+            echo "卸载完成"
+            exit 0
+            ;;
+        0) echo "退出" ; exit 0 ;;
+        *)
+            echo "无效选项"
+            ;;
     esac
 }
 
-# 主循环
-clear
-show_system_info
-echo
+# 启动安装快捷指令检测
+if [ ! -f "$SHORTCUT_PATH" ]; then
+    install_shortcut
+fi
+
+# 启动时显示一次系统状态
+show_system_usage
+
 while true; do
     show_menu
+    read -rp "请输入选项编号: " choice
+    execute_choice "$choice"
     echo
-    read -p "请输入选项编号: " choice
-    run_option "$choice"
-    echo
+    read -rp "按回车返回菜单..."
 done
