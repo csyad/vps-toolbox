@@ -9,7 +9,7 @@ reset="\033[0m"
 yellow="\033[33m"
 red="\033[31m"
 
-# 内存/磁盘/CPU 使用情况显示，36宽度右对齐
+# 显示系统资源，只显示一次
 show_system_usage() {
     local width=36
 
@@ -207,19 +207,16 @@ execute_choice() {
     esac
 }
 
-# 安装快捷命令并启动主菜单
-if [ ! -f "$INSTALL_PATH" ]; then
-    echo "保存脚本到 $INSTALL_PATH"
-    cat > "$INSTALL_PATH" << 'EOF'
-'"$(sed -n '2,$p' "$0")"'
-EOF
-    chmod +x "$INSTALL_PATH"
+# 安装快捷指令
+if [ ! -f "$SHORTCUT_PATH" ] || [ ! -f "$SHORTCUT_PATH_UPPER" ]; then
+    install_shortcut
 fi
 
-install_shortcut
-
+# 进入菜单循环
 while true; do
-    # 运行主脚本
-    bash "$INSTALL_PATH"
-    exit 0
+    show_menu
+    read -p "请输入选项编号: " choice
+    execute_choice "$choice"
+    echo
+    read -p "按回车返回菜单..."
 done
