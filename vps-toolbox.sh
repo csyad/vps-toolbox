@@ -66,7 +66,7 @@ show_menu() {
 
   ${red}【代理】${reset}
   ${green}8. HY2                     9. 3XUI
-  12. WARP                   13. SNELL
+  12. WARP                   13. Surge-snell
   14. 国外EZRealm            15. 国内EZRealm
   35. 3x-ui-alpines          39. gost${reset}
 
@@ -77,12 +77,12 @@ show_menu() {
   32. 流媒体解锁             33. 融合怪测试${reset}
 
   ${red}【应用商店】${reset}
-  ${green}18. Sub-Store              21. WEBSSH
+  ${green}18. Sub-Store              21. WebSSH
   30. Poste.io 邮局          47. OpenList${reset}
 
   ${red}【工具箱】${reset}
   ${green}10. 老王工具箱             11. 科技lion
-  17. 一点科技               31. 服务器优化
+  17. 一点科技               31. 服务器优化箱
   45. VPS Toolkit${reset}
 
   ${red}【Docker工具】${reset}
