@@ -6,10 +6,12 @@ GITHUB_URL="https://raw.githubusercontent.com/csyad/vps-toolbox/main/vps-toolbox
 # 安装快捷启动 m
 if [[ ! -f /usr/local/bin/m ]]; then
     echo "注册快捷启动命令 m..."
-    echo "bash <(curl -fsSL $GITHUB_URL)" > /usr/local/bin/m
+    cat > /usr/local/bin/m << EOF
+#!/bin/bash
+bash <(curl -fsSL $GITHUB_URL)
+EOF
     chmod +x /usr/local/bin/m
     echo "安装完成！直接输入 m 即可运行工具箱"
 else
     echo "m 已存在，跳过安装"
 fi
-
