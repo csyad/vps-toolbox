@@ -6,8 +6,9 @@ SHORTCUT_PATH="/usr/local/bin/m"
 green="\033[32m"
 reset="\033[0m"
 yellow="\033[33m"
+red="\033[31m"
 
-# 显示系统资源使用，黄色边框，36宽紧凑版
+# 内存/磁盘/CPU 使用情况显示，黄色边框，36宽度紧凑版
 show_system_usage() {
     local width=36
 
@@ -20,7 +21,9 @@ show_system_usage() {
     pad_string() {
         local str="$1"
         local pad_len=$((width - ${#str}))
-        (( pad_len < 0 )) && pad_len=0
+        if (( pad_len < 0 )); then
+            pad_len=0
+        fi
         printf "%s%*s" "$str" "$pad_len" ""
     }
 
@@ -53,52 +56,52 @@ show_menu() {
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo -e "${green}"
     echo -e "
-  【系统设置】
+  ${red}【系统设置】${reset}
   1. 更新源                  2. 更新curl
   7. DDNS                    28. 本机信息
   29. DDWin10                36. 临时禁用IPv6
   37. 添加SWAP               38. TCP窗口调优
   41. 安装Python             42. 自定义DNS解锁
 
-  【哪吒相关】
+  ${red}【哪吒相关】${reset}
   3. 哪吒压缩包              4. 卸载哪吒探针
   5. v1关SSH                 6. v0关SSH
   16. V0哪吒
 
-  【面板相关】
+  ${red}【面板相关】${reset}
   19. 宝塔面板               20. 1panel面板
   22. 宝塔开心版             40. 极光面板
   48. 哆啦A梦转发面板
 
-  【代理】
+  ${red}【代理】${reset}
   8. HY2                     9. 3XUI
-  12. WARP                   13. SNELL
+  12. WARP                   13. Surge snell
   14. 国外EZRealm            15. 国内EZRealm
   35. 3x-ui-alpines          39. gost
 
-  【网络解锁】
+  ${red}【网络解锁】${reset}
   23. IP解锁-IPv4            24. IP解锁-IPv6
   25. 网络质量-IPv4          26. 网络质量-IPv6
   27. NodeQuality脚本
   32. 流媒体解锁             33. 融合怪测试
 
-  【应用商店】
+  ${red}【应用商店】${reset}
   18. Sub-Store              21. WEBSSH
   30. Poste.io 邮局          47. OpenList
 
-  【工具箱】
+  ${red}【工具箱】${reset}
   10. 老王工具箱             11. 科技lion
   17. 一点科技               31. 服务器优化
   45. VPS Toolkit
 
-  【Docker工具】
+  ${red}【Docker工具】${reset}
   34. 安装 Docker Compose    43. Docker备份和恢复
   44. Docker容器迁移
 
-  【证书工具】
+  ${red}【证书工具】${reset}
   46. NGINX反代
 
-  【其他】
+  ${red}【其他】${reset}
   99. 卸载工具箱             0. 退出
 "
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -142,7 +145,7 @@ execute_choice() {
         17) wget -O 1keji.sh "https://www.1keji.net" && chmod +x 1keji.sh && ./1keji.sh ;;
         18) docker run -it -d --restart=always -e "SUB_STORE_CRON=0 0 * * *" -e SUB_STORE_FRONTEND_BACKEND_PATH=/2cXaAxRGfddmGz2yx1wA -p 3001:3001 -v /root/sub-store-data:/opt/app/data --name sub-store xream/sub-store ;;
         19) if [ -f /usr/bin/curl ]; then curl -sSO https://download.bt.cn/install/install_panel.sh; else wget -O install_panel.sh https://download.bt.cn/install/install_panel.sh; fi; bash install_panel.sh ed8484bec ;;
-        20) bash -c \"$(curl -sSL https://resource.fit2cloud.com/1panel/package/v2/quick_start.sh)\" ;;
+        20) bash -c "$(curl -sSL https://resource.fit2cloud.com/1panel/package/v2/quick_start.sh)" ;;
         21) docker run -d --name webssh --restart always -p 8888:8888 cmliu/webssh:latest ;;
         22) if [ -f /usr/bin/curl ]; then curl -sSO http://bt95.btkaixin.net/install/install_panel.sh; else wget -O install_panel.sh http://bt95.btkaixin.net/install/install_panel.sh; fi; bash install_panel.sh www.BTKaiXin.com ;;
         23) bash <(curl -Ls https://IP.Check.Place) -4 ;;
@@ -151,7 +154,7 @@ execute_choice() {
         26) bash <(curl -Ls https://Net.Check.Place) -6 ;;
         27) bash <(curl -sL https://run.NodeQuality.com) ;;
         28) bash <(curl -fsSL https://raw.githubusercontent.com/iu683/vps-tools/main/vpsinfo.sh) ;;
-        29) bash <(curl -sSL https://raw.githubusercontent.com/leitbogioro/Tools/master/Linux_reinstall/InstallNET.sh) -windows 10 -lang \"cn\" ;;
+        29) bash <(curl -sSL https://raw.githubusercontent.com/leitbogioro/Tools/master/Linux_reinstall/InstallNET.sh) -windows 10 -lang "cn" ;;
         30) curl -sS -O https://raw.githubusercontent.com/woniu336/open_shell/main/poste_io.sh && chmod +x poste_io.sh && ./poste_io.sh ;;
         31) bash <(curl -sL ss.hide.ss) ;;
         32) bash <(curl -L -s https://raw.githubusercontent.com/lmc999/RegionRestrictionCheck/main/check.sh) ;;
