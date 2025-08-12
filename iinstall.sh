@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# 工具箱脚本 URL（请替换为你自己 GitHub 仓库的 raw 链接）
+# 工具箱脚本 URL（请替换为你的脚本地址）
 TOOLBOX_URL="https://raw.githubusercontent.com/csyad/vps-toolbox/main/vps-toolbox.sh"
 
-# 目标脚本保存路径
 INSTALL_PATH="$HOME/vps-toolbox.sh"
 
 echo "开始下载安装脚本到 $INSTALL_PATH ..."
@@ -17,7 +16,6 @@ fi
 chmod +x "$INSTALL_PATH"
 echo "脚本下载完成，设置为可执行。"
 
-# 创建快捷指令函数
 create_shortcut() {
   local shortcut_path="/usr/local/bin/$1"
   echo "创建快捷指令 $1 ..."
@@ -32,4 +30,4 @@ EOF"
 create_shortcut "m"
 create_shortcut "M"
 
-echo -e "\n安装完成！你可以输入 m 或 M 运行工具箱。\n"
+echo -e "\n安装完成！你可以输入 m 或 M 运行小新工具箱。\n"
