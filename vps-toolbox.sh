@@ -57,52 +57,52 @@ show_menu() {
     echo -e "${green}"
     echo -e "
   ${red}【系统设置】${reset}
-  1. 更新源                  2. 更新curl
+  ${green}1. 更新源                  2. 更新curl
   7. DDNS                    28. 本机信息
   29. DDWin10                36. 临时禁用IPv6
   37. 添加SWAP               38. TCP窗口调优
-  41. 安装Python             42. 自定义DNS解锁
+  41. 安装Python             42. 自定义DNS解锁${reset}
 
   ${red}【哪吒相关】${reset}
-  3. 哪吒压缩包              4. 卸载哪吒探针
+  ${green}3. 哪吒压缩包              4. 卸载哪吒探针
   5. v1关SSH                 6. v0关SSH
-  16. V0哪吒
+  16. V0哪吒${reset}
 
   ${red}【面板相关】${reset}
-  19. 宝塔面板               20. 1panel面板
+  ${green}19. 宝塔面板               20. 1panel面板
   22. 宝塔开心版             40. 极光面板
-  48. 哆啦A梦转发面板
+  48. 哆啦A梦转发面板${reset}
 
   ${red}【代理】${reset}
-  8. HY2                     9. 3XUI
-  12. WARP                   13. Surge snell
+  ${green}8. HY2                     9. 3XUI
+  12. WARP                   13. SNELL
   14. 国外EZRealm            15. 国内EZRealm
-  35. 3x-ui-alpines          39. gost
+  35. 3x-ui-alpines          39. gost${reset}
 
   ${red}【网络解锁】${reset}
-  23. IP解锁-IPv4            24. IP解锁-IPv6
+  ${green}23. IP解锁-IPv4            24. IP解锁-IPv6
   25. 网络质量-IPv4          26. 网络质量-IPv6
   27. NodeQuality脚本
-  32. 流媒体解锁             33. 融合怪测试
+  32. 流媒体解锁             33. 融合怪测试${reset}
 
   ${red}【应用商店】${reset}
-  18. Sub-Store              21. WEBSSH
-  30. Poste.io 邮局          47. OpenList
+  ${green}18. Sub-Store              21. WEBSSH
+  30. Poste.io 邮局          47. OpenList${reset}
 
   ${red}【工具箱】${reset}
-  10. 老王工具箱             11. 科技lion
+  ${green}10. 老王工具箱             11. 科技lion
   17. 一点科技               31. 服务器优化
-  45. VPS Toolkit
+  45. VPS Toolkit${reset}
 
   ${red}【Docker工具】${reset}
-  34. 安装 Docker Compose    43. Docker备份和恢复
-  44. Docker容器迁移
+  ${green}34. 安装 Docker Compose    43. Docker备份和恢复
+  44. Docker容器迁移${reset}
 
   ${red}【证书工具】${reset}
-  46. NGINX反代
+  ${green}46. NGINX反代${reset}
 
   ${red}【其他】${reset}
-  99. 卸载工具箱             0. 退出
+  ${green}99. 卸载工具箱             0. 退出${reset}
 "
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo -e "${reset}"
