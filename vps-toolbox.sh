@@ -1,15 +1,14 @@
 #!/bin/bash
 
 INSTALL_PATH="$HOME/vps-toolbox.sh"
-SHORTCUT_PATH_LOWER="/usr/local/bin/m"
-SHORTCUT_PATH_UPPER="/usr/local/bin/M"
+SHORTCUT_PATH="/usr/local/bin/m"
 
 green="\033[32m"
 reset="\033[0m"
 yellow="\033[33m"
 red="\033[31m"
 
-# 内存/磁盘/CPU 使用情况显示，黄色边框，36宽度内容右对齐版，单位M和m都识别
+# 内存/磁盘/CPU 使用情况显示，黄色边框，36宽度内容右对齐版，只显示一次
 show_system_usage() {
     local width=36
 
@@ -46,89 +45,81 @@ rainbow_border() {
 
 show_menu() {
     clear
+    # 只显示一次系统资源
     show_system_usage
 
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     rainbow_border "    📦 服务器工具箱 📦"
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo -e "${green}"
-    echo -e "
-  ${red}【系统设置】${reset}
-  ${green}1. 更新源                  2. 更新curl
-  7. DDNS                    28. 本机信息
-  29. DDWin10                36. 临时禁用IPv6
-  37. 添加SWAP               38. TCP窗口调优
-  41. 安装Python             42. 自定义DNS解锁${reset}
 
-  ${red}【哪吒相关】${reset}
-  ${green}3. 哪吒压缩包              4. 卸载哪吒探针
-  5. v1关SSH                 6. v0关SSH
-  16. V0哪吒${reset}
+    echo -e "  ${red}【系统设置】${reset}"
+    echo -e "  ${green}1. 更新源                  2. 更新curl"
+    echo -e "  7. DDNS                    28. 本机信息"
+    echo -e "  29. DDWin10                36. 临时禁用IPv6"
+    echo -e "  37. 添加SWAP               38. TCP窗口调优"
+    echo -e "  41. 安装Python             42. 自定义DNS解锁${reset}\n"
 
-  ${red}【面板相关】${reset}
-  ${green}19. 宝塔面板               20. 1panel面板
-  22. 宝塔开心版             40. 极光面板
-  48. 哆啦A梦转发面板${reset}
+    echo -e "  ${red}【哪吒相关】${reset}"
+    echo -e "  ${green}3. 哪吒压缩包              4. 卸载哪吒探针"
+    echo -e "  5. v1关SSH                 6. v0关SSH"
+    echo -e "  16. V0哪吒${reset}\n"
 
-  ${red}【代理】${reset}
-  ${green}8. HY2                     9. 3XUI
-  12. WARP                   13. SNELL
-  14. 国外EZRealm            15. 国内EZRealm
-  35. 3x-ui-alpines          39. gost${reset}
+    echo -e "  ${red}【面板相关】${reset}"
+    echo -e "  ${green}19. 宝塔面板               20. 1panel面板"
+    echo -e "  22. 宝塔开心版             40. 极光面板"
+    echo -e "  48. 哆啦A梦转发面板${reset}\n"
 
-  ${red}【网络解锁】${reset}
-  ${green}23. IP解锁-IPv4            24. IP解锁-IPv6
-  25. 网络质量-IPv4          26. 网络质量-IPv6
-  27. NodeQuality脚本
-  32. 流媒体解锁             33. 融合怪测试
-  49. 国外三网测速          50. 国内三网测速
-  51. 国外三网延迟测试      52. 国内三网延迟测试${reset}
+    echo -e "  ${red}【代理】${reset}"
+    echo -e "  ${green}8. HY2                     9. 3XUI"
+    echo -e "  12. WARP                   13. SNELL"
+    echo -e "  14. 国外EZRealm            15. 国内EZRealm"
+    echo -e "  35. 3x-ui-alpines          39. gost${reset}\n"
 
-  ${red}【应用商店】${reset}
-  ${green}18. Sub-Store              21. WEBSSH
-  30. Poste.io 邮局          47. OpenList${reset}
+    echo -e "  ${red}【网络解锁】${reset}"
+    echo -e "  ${green}23. IP解锁-IPv4            24. IP解锁-IPv6"
+    echo -e "  25. 网络质量-IPv4          26. 网络质量-IPv6"
+    echo -e "  27. NodeQuality脚本        32. 流媒体解锁"
+    echo -e "  33. 融合怪测试             49. 国外三网测速"
+    echo -e "  50. 国内三网测速           51. 国外三网延迟测试"
+    echo -e "  52. 国内三网延迟测试${reset}\n"
 
-  ${red}【工具箱】${reset}
-  ${green}10. 老王工具箱             11. 科技lion
-  17. 一点科技               31. 服务器优化
-  45. VPS Toolkit${reset}
+    echo -e "  ${red}【应用商店】${reset}"
+    echo -e "  ${green}18. Sub-Store              21. WEBSSH"
+    echo -e "  30. Poste.io 邮局          47. OpenList${reset}\n"
 
-  ${red}【Docker工具】${reset}
-  ${green}34. 安装 Docker Compose    43. Docker备份和恢复
-  44. Docker容器迁移${reset}
+    echo -e "  ${red}【工具箱】${reset}"
+    echo -e "  ${green}10. 老王工具箱             11. 科技lion"
+    echo -e "  17. 一点科技               31. 服务器优化"
+    echo -e "  45. VPS Toolkit${reset}\n"
 
-  ${red}【证书工具】${reset}
-  ${green}46. NGINX反代${reset}
+    echo -e "  ${red}【Docker工具】${reset}"
+    echo -e "  ${green}34. 安装 Docker Compose    43. Docker备份和恢复"
+    echo -e "  44. Docker容器迁移${reset}\n"
 
-  ${red}【其他】${reset}
-  ${green}99. 卸载工具箱             0. 退出${reset}
-"
+    echo -e "  ${red}【证书工具】${reset}"
+    echo -e "  ${green}46. NGINX反代${reset}\n"
+
+    echo -e "  ${red}【其他】${reset}"
+    echo -e "  ${green}99. 卸载工具箱             0. 退出${reset}"
+
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo -e "${reset}"
 }
 
 install_shortcut() {
-    echo "创建快捷指令 m 和 M"
+    echo "创建快捷指令 m/M"
     local script_path
     script_path=$(realpath "$0")
-
-    echo "#!/bin/bash" | sudo tee "$SHORTCUT_PATH_LOWER" >/dev/null
-    echo "bash \"$script_path\"" | sudo tee -a "$SHORTCUT_PATH_LOWER" >/dev/null
-    sudo chmod +x "$SHORTCUT_PATH_LOWER"
-
-    echo "#!/bin/bash" | sudo tee "$SHORTCUT_PATH_UPPER" >/dev/null
-    echo "bash \"$script_path\"" | sudo tee -a "$SHORTCUT_PATH_UPPER" >/dev/null
-    sudo chmod +x "$SHORTCUT_PATH_UPPER"
+    echo "#!/bin/bash" | sudo tee "$SHORTCUT_PATH" >/dev/null
+    echo "bash \"$script_path\"" | sudo tee -a "$SHORTCUT_PATH" >/dev/null
+    sudo chmod +x "$SHORTCUT_PATH"
 }
 
 remove_shortcut() {
-    if [ -f "$SHORTCUT_PATH_LOWER" ]; then
-        echo "删除快捷指令 m"
-        sudo rm -f "$SHORTCUT_PATH_LOWER"
-    fi
-    if [ -f "$SHORTCUT_PATH_UPPER" ]; then
-        echo "删除快捷指令 M"
-        sudo rm -f "$SHORTCUT_PATH_UPPER"
+    if [ -f "$SHORTCUT_PATH" ]; then
+        echo "删除快捷指令 m/M"
+        sudo rm -f "$SHORTCUT_PATH"
     fi
 }
 
@@ -200,13 +191,20 @@ execute_choice() {
     esac
 }
 
+# 处理大小写 M 快捷指令
+if [[ "$0" == *"/m" || "$0" == *"/M" ]]; then
+    # 直接执行脚本
+    bash "$INSTALL_PATH"
+    exit 0
+fi
+
 while true; do
     show_menu
     read -p "请输入选项编号: " choice
     execute_choice "$choice"
     read -p "按回车返回菜单..."
 
-    if [ ! -f "$SHORTCUT_PATH_LOWER" ] || [ ! -f "$SHORTCUT_PATH_UPPER" ]; then
+    if [ ! -f "$SHORTCUT_PATH" ]; then
         install_shortcut
     fi
 done
