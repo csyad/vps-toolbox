@@ -18,8 +18,19 @@ rainbow_border() {
     echo -e "$output${reset}"
 }
 
+show_system_usage() {
+    mem_used=$(free -m | awk '/Mem:/ {print $3}')
+    mem_total=$(free -m | awk '/Mem:/ {print $2}')
+    disk_used_percent=$(df -h / | awk 'NR==2 {print $5}')
+    disk_total=$(df -h / | awk 'NR==2 {print $2}')
+    cpu_usage=$(top -bn2 | grep "Cpu(s)" | tail -n1 | awk -F'id,' '{print 100 - $1}' | awk '{printf "%.1f", $1}')
+    echo -e "📊 内存使用：已用: ${mem_used}Mi / 总: ${mem_total}Mi"
+    echo -e "💽 磁盘使用：${disk_used_percent} 已用 / 总: ${disk_total}"
+    echo -e "⚙️ CPU 使用率：${cpu_usage}%"
+    echo
+}
+
 show_menu() {
-    clear
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     rainbow_border "    📦 服务器工具箱 📦"
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -136,6 +147,8 @@ execute_choice() {
 }
 
 while true; do
+    clear
+    show_system_usage
     show_menu
     read -p "请输入选项编号: " choice
     execute_choice "$choice"
