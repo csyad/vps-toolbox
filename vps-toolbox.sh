@@ -1,14 +1,18 @@
 #!/bin/bash
+
 INSTALL_PATH="$HOME/vps-toolbox.sh"
-SHORTCUT_PATH="/usr/local/bin/m"
+SHORTCUT_PATH_LOWER="/usr/local/bin/m"
+SHORTCUT_PATH_UPPER="/usr/local/bin/M"
 
 green="\033[32m"
 reset="\033[0m"
 yellow="\033[33m"
 red="\033[31m"
 
+# 内存/磁盘/CPU 使用情况显示，黄色边框，36宽度内容右对齐版
 show_system_usage() {
     local width=36
+
     mem_used=$(free -m | awk '/Mem:/ {print $3}')
     mem_total=$(free -m | awk '/Mem:/ {print $2}')
     disk_used_percent=$(df -h / | awk 'NR==2 {print $5}')
@@ -42,10 +46,12 @@ rainbow_border() {
 
 show_menu() {
     clear
-    # 注意这里不要调用 show_system_usage，避免重复显示
+    show_system_usage
+
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     rainbow_border "    📦 服务器工具箱 📦"
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo -e "${green}"
     echo -e "
   ${red}【系统设置】${reset}
   ${green}1. 更新源                  2. 更新curl
@@ -66,7 +72,7 @@ show_menu() {
 
   ${red}【代理】${reset}
   ${green}8. HY2                     9. 3XUI
-  12. WARP                   13. Surge-snell
+  12. WARP                   13. SNELL
   14. 国外EZRealm            15. 国内EZRealm
   35. 3x-ui-alpines          39. gost${reset}
 
@@ -74,15 +80,16 @@ show_menu() {
   ${green}23. IP解锁-IPv4            24. IP解锁-IPv6
   25. 网络质量-IPv4          26. 网络质量-IPv6
   27. NodeQuality脚本
-  32. 流媒体解锁             33. 融合怪测试${reset}
+  32. 流媒体解锁             33. 融合怪测试
+  49. 国外三网测速           50. 国内三网测速${reset}
 
   ${red}【应用商店】${reset}
-  ${green}18. Sub-Store              21. WebSSH
+  ${green}18. Sub-Store              21. WEBSSH
   30. Poste.io 邮局          47. OpenList${reset}
 
   ${red}【工具箱】${reset}
   ${green}10. 老王工具箱             11. 科技lion
-  17. 一点科技               31. 服务器优化箱
+  17. 一点科技               31. 服务器优化
   45. VPS Toolkit${reset}
 
   ${red}【Docker工具】${reset}
@@ -100,19 +107,23 @@ show_menu() {
 }
 
 install_shortcut() {
-    echo "创建快捷指令 m"
+    echo "创建快捷指令 m 和 M"
     local script_path
     script_path=$(realpath "$0")
-    echo "#!/bin/bash" | sudo tee "$SHORTCUT_PATH" >/dev/null
-    echo "bash \"$script_path\"" | sudo tee -a "$SHORTCUT_PATH" >/dev/null
-    sudo chmod +x "$SHORTCUT_PATH"
+    for shortcut in m M; do
+        echo "#!/bin/bash" | sudo tee "/usr/local/bin/$shortcut" >/dev/null
+        echo "bash \"$script_path\"" | sudo tee -a "/usr/local/bin/$shortcut" >/dev/null
+        sudo chmod +x "/usr/local/bin/$shortcut"
+    done
 }
 
 remove_shortcut() {
-    if [ -f "$SHORTCUT_PATH" ]; then
-        echo "删除快捷指令 m"
-        sudo rm -f "$SHORTCUT_PATH"
-    fi
+    for shortcut in "$SHORTCUT_PATH_LOWER" "$SHORTCUT_PATH_UPPER"; do
+        if [ -f "$shortcut" ]; then
+            echo "删除快捷指令 $(basename "$shortcut")"
+            sudo rm -f "$shortcut"
+        fi
+    done
 }
 
 execute_choice() {
@@ -165,6 +176,8 @@ execute_choice() {
         46) bash <(curl -sL kejilion.sh) fd ;;
         47) curl -fsSL https://res.oplist.org/script/v4.sh > install-openlist-v4.sh && sudo bash install-openlist-v4.sh ;;
         48) curl -L https://raw.githubusercontent.com/bqlpfy/forward-panel/refs/heads/main/panel_install.sh -o panel_install.sh && chmod +x panel_install.sh && ./panel_install.sh ;;
+        49) bash <(wget -qO- bash.spiritlhl.net/ecs-cn) ;;
+        50) bash <(wget -qO- --no-check-certificate https://cdn.spiritlhl.net/https://raw.githubusercontent.com/spiritLHLS/ecsspeed/main/script/ecsspeed-cn.sh) ;;
         99)
             echo "卸载工具箱..."
             rm -f "$INSTALL_PATH"
@@ -179,16 +192,14 @@ execute_choice() {
     esac
 }
 
-if [ ! -f "$SHORTCUT_PATH" ]; then
-    install_shortcut
-fi
-
-show_system_usage
-
 while true; do
     show_menu
-    read -rp "请输入选项编号: " choice
+    read -p "请输入选项编号: " choice
+    choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')  # 转小写，方便扩展
     execute_choice "$choice"
-    echo
-    read -rp "按回车返回菜单..."
+    read -p "按回车返回菜单..."
+
+    if [ ! -f "$SHORTCUT_PATH_LOWER" ] || [ ! -f "$SHORTCUT_PATH_UPPER" ]; then
+        install_shortcut
+    fi
 done
