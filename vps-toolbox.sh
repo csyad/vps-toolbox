@@ -1,5 +1,5 @@
 #!/bin/bash
-# VPS Toolbox - 稳定版（方案二：卡片式布局）
+# VPS Toolbox - 稳定版（方案一：简约对齐）
 
 # --- 全局变量和路径定义 ---
 INSTALL_PATH="$HOME/vps-toolbox.sh"
@@ -44,90 +44,71 @@ rainbow_border() {
     echo -e "$output${reset}"
 }
 
-# --- 菜单显示函数（方案二：卡片式布局）---
+# --- 菜单显示函数（方案一：简约对齐）---
 show_menu() {
     clear
     show_system_usage
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     rainbow_border "                     📦 服务器工具箱 📦                  "
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    # 使用 printf 进行格式化对齐, %-28s 表示左对齐，占用28个字符宽度
+    # 标题和内容都用颜色包裹
+    echo -e "\n${red}【系统设置】${reset}"
+    printf "${green}  %-26s %-26s${reset}\n" "1. 更新源" "2. 更新curl"
+    printf "${green}  %-26s %-26s${reset}\n" "3. DDNS" "4. 本机信息"
+    printf "${green}  %-26s %-26s${reset}\n" "5. DDWin10" "6. 临时禁用IPv6"
+    printf "${green}  %-26s %-26s${reset}\n" "7. 添加SWAP" "8. TCP窗口调优"
+    printf "${green}  %-26s %-26s${reset}\n" "9. 安装Python" "10. 自定义DNS解锁"
+
+    echo -e "\n${red}【哪吒相关】${reset}"
+    printf "${green}  %-26s %-26s${reset}\n" "11. 哪吒压缩包" "12. 卸载哪吒探针"
+    printf "${green}  %-26s %-26s${reset}\n" "13. v1关SSH" "14. v0关SSH"
+    printf "${green}  %-26s${reset}\n" "15. V0哪吒"
+
+    echo -e "\n${red}【面板相关】${reset}"
+    printf "${green}  %-26s %-26s${reset}\n" "16. 宝塔面板" "17. 1panel面板"
+    printf "${green}  %-26s %-26s${reset}\n" "18. 宝塔开心版" "19. 极光面板"
+    printf "${green}  %-26s${reset}\n" "20. 哆啦A梦转发面板"
+
+    echo -e "\n${red}【代理】${reset}"
+    printf "${green}  %-26s %-26s${reset}\n" "21. HY2" "22. 3XUI"
+    printf "${green}  %-26s %-26s${reset}\n" "23. WARP" "24. SNELL"
+    printf "${green}  %-26s %-26s${reset}\n" "25. 国外EZRealm" "26. 国内EZRealm"
+    printf "${green}  %-26s %-26s${reset}\n" "27. 3x-ui-alpines" "28. gost"
+
+    echo -e "\n${red}【网络解锁】${reset}"
+    printf "${green}  %-26s %-26s${reset}\n" "29. IP解锁-IPv4" "30. IP解锁-IPv6"
+    printf "${green}  %-26s %-26s${reset}\n" "31. 网络质量-IPv4" "32. 网络质量-IPv6"
+    printf "${green}  %-26s %-26s${reset}\n" "33. NodeQuality脚本" "34. 流媒体解锁"
+    printf "${green}  %-26s %-26s${reset}\n" "35. 融合怪测试" "36. 国外三网测速"
+    printf "${green}  %-26s %-26s${reset}\n" "37. 国内三网测速" "38. 国外三网延迟测试"
+    printf "${green}  %-26s${reset}\n" "39. 国内三网延迟测试"
+
+    echo -e "\n${red}【应用商店】${reset}"
+    printf "${green}  %-26s %-26s${reset}\n" "40. Sub-Store" "41. WEBSSH"
+    printf "${green}  %-26s %-26s${reset}\n" "42. Poste.io 邮局" "43. OpenList"
+
+    echo -e "\n${red}【工具箱】${reset}"
+    printf "${green}  %-26s %-26s${reset}\n" "44. 老王工具箱" "45. 科技lion"
+    printf "${green}  %-26s %-26s${reset}\n" "46. 一点科技" "47. 服务器优化"
+    printf "${green}  %-26s${reset}\n" "48. VPS Toolkit"
+
+    echo -e "\n${red}【Docker工具】${reset}"
+    printf "${green}  %-26s %-26s${reset}\n" "49. 安装 Docker Compose" "50. Docker备份和恢复"
+    printf "${green}  %-26s${reset}\n" "51. Docker容器迁移"
+
+    echo -e "\n${red}【证书工具】${reset}"
+    printf "${green}  %-26s${reset}\n" "52. NGINX反代"
+
+    echo -e "\n${red}【其他】${reset}"
+    printf "${green}  %-26s %-26s${reset}\n" "88. VPS管理" "99. 卸载工具箱"
+    printf "${green}  %-26s${reset}\n" "0. 退出"
     
-    # 封装一个打印区块的函数，代码更简洁
-    print_section() {
-        local title=$1
-        shift
-        local width=58
-        # 动态计算标题前后需要多少个横线
-        local title_len=${#title}
-        # 使用-v来安全地处理title，避免被awk误认为代码
-        local clean_title_len=$(echo "$title" | awk '{ print length }')
-        local line_len=$(( (width - clean_title_len - 2) / 2 ))
-        printf "┌%s【%s】%s┐\n" "$(printf '─%.0s' $(seq 1 $line_len))" "$title" "$(printf '─%.0s' $(seq 1 $((width - line_len - clean_title_len - 2)) ))"
-        
-        # 打印内容
-        while [ "$#" -gt 0 ]; do
-            if [ -n "$2" ]; then
-                printf "│ %-26s %-26s │\n" "$1" "$2"
-                shift 2
-            else
-                printf "│ %-53s │\n" "$1"
-                shift 1
-            fi
-        done
-        printf "└$(printf '─%.0s' $(seq 1 $width))┘\n"
-    }
-
-    print_section "系统设置" \
-        "1. 更新源" "2. 更新curl" \
-        "3. DDNS" "4. 本机信息" \
-        "5. DDWin10" "6. 临时禁用IPv6" \
-        "7. 添加SWAP" "8. TCP窗口调优" \
-        "9. 安装Python" "10. 自定义DNS解锁"
-
-    print_section "哪吒相关" \
-        "11. 哪吒压缩包" "12. 卸载哪吒探针" \
-        "13. v1关SSH" "14. v0关SSH" \
-        "15. V0哪吒"
-
-    print_section "面板相关" \
-        "16. 宝塔面板" "17. 1panel面板" \
-        "18. 宝塔开心版" "19. 极光面板" \
-        "20. 哆啦A梦转发面板"
-
-    print_section "代理" \
-        "21. HY2" "22. 3XUI" \
-        "23. WARP" "24. SNELL" \
-        "25. 国外EZRealm" "26. 国内EZRealm" \
-        "27. 3x-ui-alpines" "28. gost"
-
-    print_section "网络解锁" \
-        "29. IP解锁-IPv4" "30. IP解锁-IPv6" \
-        "31. 网络质量-IPv4" "32. 网络质量-IPv6" \
-        "33. NodeQuality脚本" "34. 流媒体解锁" \
-        "35. 融合怪测试" "36. 国外三网测速" \
-        "37. 国内三网测速" "38. 国外三网延迟测试" \
-        "39. 国内三网延迟测试"
-
-    print_section "应用商店" \
-        "40. Sub-Store" "41. WEBSSH" \
-        "42. Poste.io 邮局" "43. OpenList"
-    
-    print_section "工具箱" \
-        "44. 老王工具箱" "45. 科技lion" \
-        "46. 一点科技" "47. 服务器优化" \
-        "48. VPS Toolkit"
-
-    print_section "Docker工具" \
-        "49. 安装 Docker Compose" "50. Docker备份和恢复" \
-        "51. Docker容器迁移"
-
-    print_section "证书工具" \
-        "52. NGINX反代"
-
-    print_section "其他" \
-        "88. VPS管理" "99. 卸载工具箱" \
-        "0. 退出"
+    echo "" # 在菜单末尾添加一个空行
+    rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 }
+
 
 # --- 快捷方式安装/卸载函数 ---
 install_shortcut() {
