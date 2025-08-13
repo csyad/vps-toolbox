@@ -1,20 +1,21 @@
 #!/bin/bash
-# VPS Toolbox - 稳定版（顺序重排版）
+# VPS Toolbox - 稳定版（方案二：卡片式布局）
 
+# --- 全局变量和路径定义 ---
 INSTALL_PATH="$HOME/vps-toolbox.sh"
 SHORTCUT_PATH="/usr/local/bin/m"
 SHORTCUT_PATH_UPPER="/usr/local/bin/M"
 
-# 颜色定义
+# --- 颜色定义 ---
 green="\033[32m"
 reset="\033[0m"
 yellow="\033[33m"
 red="\033[31m"
 
-# Ctrl+C 中断保护
+# --- Ctrl+C 中断保护 ---
 trap 'echo -e "\n${red}操作已中断${reset}"; exit 1' INT
 
-# 系统资源显示
+# --- 系统资源显示函数 ---
 show_system_usage() {
     local width=36
     mem_used=$(free -m | awk '/Mem:/ {print $3}')
@@ -30,6 +31,7 @@ show_system_usage() {
     echo -e "${yellow}└$(printf '─%.0s' $(seq 1 $width))┘${reset}\n"
 }
 
+# --- 彩虹边框函数 ---
 rainbow_border() {
     local text="$1"
     local colors=(31 33 32 36 34 35)
@@ -42,68 +44,92 @@ rainbow_border() {
     echo -e "$output${reset}"
 }
 
+# --- 菜单显示函数（方案二：卡片式布局）---
 show_menu() {
     clear
     show_system_usage
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    rainbow_border "    📦 服务器工具箱 📦"
+    rainbow_border "                     📦 服务器工具箱 📦                  "
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo -e "${green}"
-    echo -e "
-${red}【系统设置】${reset}
-${green}1. 更新源                  2. 更新curl
-3. DDNS                     4. 本机信息
-5. DDWin10                  6. 临时禁用IPv6
-7. 添加SWAP                 8. TCP窗口调优
-9. 安装Python               10. 自定义DNS解锁${reset}
+    
+    # 封装一个打印区块的函数，代码更简洁
+    print_section() {
+        local title=$1
+        shift
+        local width=58
+        # 动态计算标题前后需要多少个横线
+        local title_len=${#title}
+        # 使用-v来安全地处理title，避免被awk误认为代码
+        local clean_title_len=$(echo "$title" | awk '{ print length }')
+        local line_len=$(( (width - clean_title_len - 2) / 2 ))
+        printf "┌%s【%s】%s┐\n" "$(printf '─%.0s' $(seq 1 $line_len))" "$title" "$(printf '─%.0s' $(seq 1 $((width - line_len - clean_title_len - 2)) ))"
+        
+        # 打印内容
+        while [ "$#" -gt 0 ]; do
+            if [ -n "$2" ]; then
+                printf "│ %-26s %-26s │\n" "$1" "$2"
+                shift 2
+            else
+                printf "│ %-53s │\n" "$1"
+                shift 1
+            fi
+        done
+        printf "└$(printf '─%.0s' $(seq 1 $width))┘\n"
+    }
 
-${red}【哪吒相关】${reset}
-${green}11. 哪吒压缩包              12. 卸载哪吒探针
-13. v1关SSH                  14. v0关SSH
-15. V0哪吒${reset}
+    print_section "系统设置" \
+        "1. 更新源" "2. 更新curl" \
+        "3. DDNS" "4. 本机信息" \
+        "5. DDWin10" "6. 临时禁用IPv6" \
+        "7. 添加SWAP" "8. TCP窗口调优" \
+        "9. 安装Python" "10. 自定义DNS解锁"
 
-${red}【面板相关】${reset}
-${green}16. 宝塔面板               17. 1panel面板
-18. 宝塔开心版               19. 极光面板
-20. 哆啦A梦转发面板${reset}
+    print_section "哪吒相关" \
+        "11. 哪吒压缩包" "12. 卸载哪吒探针" \
+        "13. v1关SSH" "14. v0关SSH" \
+        "15. V0哪吒"
 
-${red}【代理】${reset}
-${green}21. HY2                    22. 3XUI
-23. WARP                    24. SNELL
-25. 国外EZRealm             26. 国内EZRealm
-27. 3x-ui-alpines           28. gost${reset}
+    print_section "面板相关" \
+        "16. 宝塔面板" "17. 1panel面板" \
+        "18. 宝塔开心版" "19. 极光面板" \
+        "20. 哆啦A梦转发面板"
 
-${red}【网络解锁】${reset}
-${green}29. IP解锁-IPv4            30. IP解锁-IPv6
-31. 网络质量-IPv4           32. 网络质量-IPv6
-33. NodeQuality脚本          34. 流媒体解锁
-35. 融合怪测试               36. 国外三网测速
-37. 国内三网测速             38. 国外三网延迟测试
-39. 国内三网延迟测试${reset}
+    print_section "代理" \
+        "21. HY2" "22. 3XUI" \
+        "23. WARP" "24. SNELL" \
+        "25. 国外EZRealm" "26. 国内EZRealm" \
+        "27. 3x-ui-alpines" "28. gost"
 
-${red}【应用商店】${reset}
-${green}40. Sub-Store              41. WEBSSH
-42. Poste.io 邮局            43. OpenList${reset}
+    print_section "网络解锁" \
+        "29. IP解锁-IPv4" "30. IP解锁-IPv6" \
+        "31. 网络质量-IPv4" "32. 网络质量-IPv6" \
+        "33. NodeQuality脚本" "34. 流媒体解锁" \
+        "35. 融合怪测试" "36. 国外三网测速" \
+        "37. 国内三网测速" "38. 国外三网延迟测试" \
+        "39. 国内三网延迟测试"
 
-${red}【工具箱】${reset}
-${green}44. 老王工具箱             45. 科技lion
-46. 一点科技                 47. 服务器优化
-48. VPS Toolkit${reset}
+    print_section "应用商店" \
+        "40. Sub-Store" "41. WEBSSH" \
+        "42. Poste.io 邮局" "43. OpenList"
+    
+    print_section "工具箱" \
+        "44. 老王工具箱" "45. 科技lion" \
+        "46. 一点科技" "47. 服务器优化" \
+        "48. VPS Toolkit"
 
-${red}【Docker工具】${reset}
-${green}49. 安装 Docker Compose    50. Docker备份和恢复
-51. Docker容器迁移${reset}
+    print_section "Docker工具" \
+        "49. 安装 Docker Compose" "50. Docker备份和恢复" \
+        "51. Docker容器迁移"
 
-${red}【证书工具】${reset}
-${green}52. NGINX反代${reset}
+    print_section "证书工具" \
+        "52. NGINX反代"
 
-${red}【其他】${reset}
-${green}88. VPS管理                99. 卸载工具箱
-0. 退出${reset}
-"
-    rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    print_section "其他" \
+        "88. VPS管理" "99. 卸载工具箱" \
+        "0. 退出"
 }
 
+# --- 快捷方式安装/卸载函数 ---
 install_shortcut() {
     echo -e "${green}创建快捷指令 m 和 M${reset}"
     local script_path
@@ -119,6 +145,7 @@ remove_shortcut() {
     echo -e "${red}已删除快捷指令 m 和 M${reset}"
 }
 
+# --- 命令执行函数 ---
 execute_choice() {
     case "$1" in
         1) sudo apt update ;;
@@ -180,10 +207,13 @@ execute_choice() {
     esac
 }
 
+# --- 主执行逻辑 ---
+# 首次运行时安装快捷方式
 if [ ! -f "$SHORTCUT_PATH" ] || [ ! -f "$SHORTCUT_PATH_UPPER" ]; then
     install_shortcut
 fi
 
+# 循环显示菜单
 while true; do
     show_menu
     read -p "请输入选项编号: " choice
