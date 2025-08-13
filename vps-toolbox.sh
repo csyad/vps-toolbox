@@ -42,68 +42,65 @@ rainbow_border() {
     echo -e "$output${reset}"
 }
 
-# --- 菜单函数（已修改对齐） ---
 show_menu() {
     clear
     show_system_usage
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    rainbow_border "                     📦 服务器工具箱 📦                  "
+    rainbow_border "    📦 服务器工具箱 📦"
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    
-    # 使用 printf 进行格式化对齐
-    # %-28s 表示左对齐，占用28个字符宽度
-    
-    echo -e "\n${red}【系统设置】${reset}"
-    printf "${green}%-28s %-28s${reset}\n" "1. 更新源" "2. 更新curl"
-    printf "${green}%-28s %-28s${reset}\n" "3. DDNS" "4. 本机信息"
-    printf "${green}%-28s %-28s${reset}\n" "5. DDWin10" "6. 临时禁用IPv6"
-    printf "${green}%-28s %-28s${reset}\n" "7. 添加SWAP" "8. TCP窗口调优"
-    printf "${green}%-28s %-28s${reset}\n" "9. 安装Python" "10. 自定义DNS解锁"
+    echo -e "${green}"
+    echo -e "
+${red}【系统设置】${reset}
+${green}1. 更新源                  2. 更新curl
+3. DDNS                     4. 本机信息
+5. DDWin10                  6. 临时禁用IPv6
+7. 添加SWAP                 8. TCP窗口调优
+9. 安装Python               10. 自定义DNS解锁${reset}
 
-    echo -e "${red}【哪吒相关】${reset}"
-    printf "${green}%-28s %-28s${reset}\n" "11. 哪吒压缩包" "12. 卸载哪吒探针"
-    printf "${green}%-28s %-28s${reset}\n" "13. v1关SSH" "14. v0关SSH"
-    printf "${green}%-28s${reset}\n" "15. V0哪吒"
+${red}【哪吒相关】${reset}
+${green}11. 哪吒压缩包              12. 卸载哪吒探针
+13. v1关SSH                  14. v0关SSH
+15. V0哪吒${reset}
 
-    echo -e "${red}【面板相关】${reset}"
-    printf "${green}%-28s %-28s${reset}\n" "16. 宝塔面板" "17. 1panel面板"
-    printf "${green}%-28s %-28s${reset}\n" "18. 宝塔开心版" "19. 极光面板"
-    printf "${green}%-28s${reset}\n" "20. 哆啦A梦转发面板"
+${red}【面板相关】${reset}
+${green}16. 宝塔面板               17. 1panel面板
+18. 宝塔开心版               19. 极光面板
+20. 哆啦A梦转发面板${reset}
 
-    echo -e "${red}【代理】${reset}"
-    printf "${green}%-28s %-28s${reset}\n" "21. HY2" "22. 3XUI"
-    printf "${green}%-28s %-28s${reset}\n" "23. WARP" "24. SNELL"
-    printf "${green}%-28s %-28s${reset}\n" "25. 国外EZRealm" "26. 国内EZRealm"
-    printf "${green}%-28s %-28s${reset}\n" "27. 3x-ui-alpines" "28. gost"
+${red}【代理】${reset}
+${green}21. HY2                    22. 3XUI
+23. WARP                    24. SNELL
+25. 国外EZRealm             26. 国内EZRealm
+27. 3x-ui-alpines           28. gost${reset}
 
-    echo -e "${red}【网络解锁】${reset}"
-    printf "${green}%-28s %-28s${reset}\n" "29. IP解锁-IPv4" "30. IP解锁-IPv6"
-    printf "${green}%-28s %-28s${reset}\n" "31. 网络质量-IPv4" "32. 网络质量-IPv6"
-    printf "${green}%-28s %-28s${reset}\n" "33. NodeQuality脚本" "34. 流媒体解锁"
-    printf "${green}%-28s %-28s${reset}\n" "35. 融合怪测试" "36. 国外三网测速"
-    printf "${green}%-28s %-28s${reset}\n" "37. 国内三网测速" "38. 国外三网延迟测试"
-    printf "${green}%-28s${reset}\n" "39. 国内三网延迟测试"
+${red}【网络解锁】${reset}
+${green}29. IP解锁-IPv4            30. IP解锁-IPv6
+31. 网络质量-IPv4           32. 网络质量-IPv6
+33. NodeQuality脚本          34. 流媒体解锁
+35. 融合怪测试               36. 国外三网测速
+37. 国内三网测速             38. 国外三网延迟测试
+39. 国内三网延迟测试${reset}
 
-    echo -e "${red}【应用商店】${reset}"
-    printf "${green}%-28s %-28s${reset}\n" "40. Sub-Store" "41. WEBSSH"
-    printf "${green}%-28s %-28s${reset}\n" "42. Poste.io 邮局" "43. OpenList"
+${red}【应用商店】${reset}
+${green}40. Sub-Store              41. WEBSSH
+42. Poste.io 邮局            43. OpenList${reset}
 
-    echo -e "${red}【工具箱】${reset}"
-    printf "${green}%-28s %-28s${reset}\n" "44. 老王工具箱" "45. 科技lion"
-    printf "${green}%-28s %-28s${reset}\n" "46. 一点科技" "47. 服务器优化"
-    printf "${green}%-28s${reset}\n" "48. VPS Toolkit"
+${red}【工具箱】${reset}
+${green}44. 老王工具箱             45. 科技lion
+46. 一点科技                 47. 服务器优化
+48. VPS Toolkit${reset}
 
-    echo -e "${red}【Docker工具】${reset}"
-    printf "${green}%-28s %-28s${reset}\n" "49. 安装 Docker Compose" "50. Docker备份和恢复"
-    printf "${green}%-28s${reset}\n" "51. Docker容器迁移"
+${red}【Docker工具】${reset}
+${green}49. 安装 Docker Compose    50. Docker备份和恢复
+51. Docker容器迁移${reset}
 
-    echo -e "${red}【证书工具】${reset}"
-    printf "${green}%-28s${reset}\n" "52. NGINX反代"
+${red}【证书工具】${reset}
+${green}52. NGINX反代${reset}
 
-    echo -e "${red}【其他】${reset}"
-    printf "${green}%-28s %-28s${reset}\n" "88. VPS管理" "99. 卸载工具箱"
-    printf "${green}%-28s${reset}\n" "0. 退出"
-
+${red}【其他】${reset}
+${green}88. VPS管理                99. 卸载工具箱
+0. 退出${reset}
+"
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 }
 
