@@ -1,63 +1,47 @@
 #!/bin/bash
-# =========================================================
-# VPS Toolbox - 全功能整合版（动态彩虹动画 + 对齐彩色菜单）
-# 作者：你
-# 用法：chmod +x vps-toolbox.sh && ./vps-toolbox.sh
-# 备注：首次运行会创建快捷指令 m / M
-# =========================================================
+# VPS Toolbox - 最终整合美化版（原样执行逻辑 + 丝滑彩虹标题 + 对齐菜单）
+# 说明：
+# - 所有执行逻辑保持你原来的命令不变（case 内一字不改）
+# - 美化项：丝滑动态彩虹标题、系统信息面板、彩色分类菜单、编号补零对齐
+# - 退出项 0 显示为自然的 "0"（不补零）；其余为 01、02...
+# - 首次运行自动安装快捷方式 m / M
 
 INSTALL_PATH="$HOME/vps-toolbox.sh"
 SHORTCUT_PATH="/usr/local/bin/m"
 SHORTCUT_PATH_UPPER="/usr/local/bin/M"
 
-# 颜色定义
+# 颜色
 green="\033[32m"
 reset="\033[0m"
 yellow="\033[33m"
 red="\033[31m"
 
-#========= 动态彩虹标题 =========#
-rainbow_animation() {
-    local text="🌈 VPS Toolbox 🌈"
-    local len=${#text}
-    local loops=42
-    local colors=(31 33 32 36 34 35)  # 红 黄 绿 青 蓝 紫
-    for ((i=0; i<loops; i++)); do
-        local output=""
-        for ((c=0; c<len; c++)); do
-            output+="\033[${colors[$(((c+i)%${#colors[@]}))]}m${text:$c:1}"
-        done
-        echo -ne "\r${output}${reset}"
-        sleep 0.04
-    done
-    echo -e "\n"
-}
-
 # Ctrl+C 中断保护
 trap 'echo -e "\n${red}操作已中断${reset}"; exit 1' INT
 
-# 系统资源显示（左对齐盒子）
-show_system_usage() {
-    local width=36
-    mem_used=$(free -m | awk '/Mem:/ {print $3}')
-    mem_total=$(free -m | awk '/Mem:/ {print $2}')
-    disk_used_percent=$(df -h / | awk 'NR==2 {print $5}')
-    disk_total=$(df -h / | awk 'NR==2 {print $2}')
-    cpu_usage=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {printf "%.1f", usage}')
-    pad_string() { local str="$1"; printf "%-${width}s" "$str"; }
-    echo -e "${yellow}┌$(printf '─%.0s' $(seq 1 $width))┐${reset}"
-    echo -e "${yellow}$(pad_string "📊 内存：${mem_used}Mi/${mem_total}Mi")${reset}"
-    echo -e "${yellow}$(pad_string "💽 磁盘：${disk_used_percent} 用 / 总 ${disk_total}")${reset}"
-    echo -e "${yellow}$(pad_string "⚙ CPU：${cpu_usage}%")${reset}"
-    echo -e "${yellow}└$(printf '─%.0s' $(seq 1 $width))┘${reset}\n"
+# 丝滑动态彩虹标题
+rainbow_animate() {
+    local text="$1"
+    local colors=(31 33 32 36 34 35)
+    local len=${#text}
+    local i c idx
+    for ((i=0; i<len; i++)); do
+        c="${text:$i:1}"
+        idx=$(( i % ${#colors[@]} ))
+        printf "\033[%sm%s" "${colors[$idx]}" "$c"
+        # 丝滑一点：更短的延迟
+        sleep 0.005
+    done
+    printf "${reset}\n"
 }
 
-# 彩虹边框
+# 彩虹静态边框
 rainbow_border() {
     local text="$1"
     local colors=(31 33 32 36 34 35)
     local output=""
     local i=0
+    local c
     for (( c=0; c<${#text}; c++ )); do
         output+="\033[${colors[$i]}m${text:$c:1}"
         ((i=(i+1)%${#colors[@]}))
@@ -65,22 +49,40 @@ rainbow_border() {
     echo -e "$output${reset}"
 }
 
-# 打印菜单项（编号补零，但 0 只显示 0）
+# 系统资源显示
+show_system_usage() {
+    local width=36
+    mem_used=$(free -m | awk '/Mem:/ {print $3}')
+    mem_total=$(free -m | awk '/Mem:/ {print $2}')
+    disk_used_percent=$(df -h / | awk 'NR==2 {print $5}')
+    disk_total=$(df -h / | awk 'NR==2 {print $2}')
+    cpu_usage=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {printf "%.1f", usage}')
+    pad_string() { local str="$1"; printf "%${width}s" "$str"; }
+    echo -e "${yellow}┌$(printf '─%.0s' $(seq 1 $width))┐${reset}"
+    echo -e "${yellow}$(pad_string "📊 内存：${mem_used}Mi/${mem_total}Mi")${reset}"
+    echo -e "${yellow}$(pad_string "💽 磁盘：${disk_used_percent} 用 / 总 ${disk_total}")${reset}"
+    echo -e "${yellow}$(pad_string "⚙ CPU：${cpu_usage}%")${reset}"
+    echo -e "${yellow}└$(printf '─%.0s' $(seq 1 $width))┘${reset}\n"
+}
+
+# 打印菜单项（退出项 0 不补零，其余两位补零）
 print_option() {
     local num="$1"
     local text="$2"
-    if [[ "$num" == "0" ]]; then
-        printf "${green}%-2s  %-30s${reset}\n" "$num" "$text"
+    if [ "$num" -eq 0 ]; then
+        printf "${green}%-3s %-30s${reset}\n" "$num" "$text"
     else
         printf "${green}%02d  %-30s${reset}\n" "$num" "$text"
     fi
 }
 
-# 菜单显示
+# 显示菜单
 show_menu() {
-    rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    rainbow_border "    📦 服务器工具箱 📦"
-    rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    clear
+    rainbow_animate "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    rainbow_animate "              📦 VPS 服务器工具箱 📦          "
+    rainbow_animate "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    show_system_usage
 
     echo -e "${red}【系统设置】${reset}"
     print_option 1  "更新源"
@@ -153,8 +155,8 @@ show_menu() {
     print_option 52 "NGINX反代"
 
     echo -e "\n${red}【其他】${reset}"
-    print_option 88 "VPS 管理"
-    print_option 99 "卸载本工具箱（危险）"
+    print_option 88 "VPS管理"
+    print_option 99 "卸载工具箱（危险）"
     print_option 0  "退出"
 
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -177,7 +179,7 @@ remove_shortcut() {
     echo -e "${red}已删除快捷指令 m 和 M${reset}"
 }
 
-# 统一执行逻辑
+# 执行菜单选项（保持原始命令不动）
 execute_choice() {
     case "$1" in
         1) sudo apt update ;;
@@ -239,30 +241,16 @@ execute_choice() {
     esac
 }
 
-# 规范化输入：把开头的 0 去掉，但 0 本身保留为 0（支持用户误输 00）
-normalize_choice() {
-    local raw="$1"
-    if [[ "$raw" =~ ^0+$ ]]; then
-        echo 0
-    else
-        echo "$raw" | sed 's/^0*\([1-9][0-9]*\)$/\1/'
-    fi
-}
-
-# 检查并安装快捷方式
+# 首次运行安装快捷方式
 if [ ! -f "$SHORTCUT_PATH" ] || [ ! -f "$SHORTCUT_PATH_UPPER" ]; then
     install_shortcut
 fi
 
 # 主循环
 while true; do
-    clear
-    rainbow_animation
-    show_system_usage
     show_menu
-    read -rp "请输入选项编号: " choice_raw
-    choice="$(normalize_choice "$choice_raw")"
+    read -p "请输入选项编号: " choice
     execute_choice "$choice"
     echo
-    read -rp "按回车返回菜单..."
+    read -p "按回车返回菜单..."
 done
