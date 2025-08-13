@@ -157,7 +157,7 @@ show_menu() {
     echo -e "\n${red}【其他】${reset}"
     print_option 88 "VPS管理"
     print_option 89 "更新脚本"
-    print_option 99 "卸载工具箱（危险）"
+    print_option 99 "卸载工具箱"
     print_option 0  "退出"
 
     rainbow_border "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
