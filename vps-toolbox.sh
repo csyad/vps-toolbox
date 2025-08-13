@@ -81,10 +81,10 @@ show_menu() {
 
     echo -e "${red}【系统设置】${reset}"
     print_option 1  "更新源"
-    print_option 2  "更新curl"
+    print_option 2  "安装curl"
     print_option 3  "DDNS"
     print_option 4  "本机信息"
-    print_option 5  "DDWin10"
+    print_option 5  "DDwindows10"
     print_option 6  "临时禁用IPv6"
     print_option 7  "添加SWAP"
     print_option 8  "TCP窗口调优"
