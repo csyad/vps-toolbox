@@ -73,7 +73,7 @@ SUB_MENU[5]="34 IP解锁-IPv4|35 IP解锁-IPv6|36 网络质量-IPv4|37 网络质
 SUB_MENU[6]="45 Sub-Store|46 WebSSH|47 Poste.io 邮局|48 OpenList|49 应用管理工具"
 SUB_MENU[7]="50 老王工具箱|51 科技lion|52 一点科技|53 服务器优化工具|54 VPS-Toolkit"
 SUB_MENU[8]="55 安装 DockerCompose|56 Docker备份和恢复|57 Docker容器迁移|58 Docker管理"
-SUB_MENU[9]="59 NGINX反代|60 1kejiNGINX反代(V4)|61 1kejiNGINX反代(V6)"
+SUB_MENU[9]="59 1kejiNGINX反代(V4)|60 1kejiNGINX反代(V6)"
 SUB_MENU[10]="88 更新脚本|99 卸载工具箱"
 
 # 显示一级菜单
@@ -209,16 +209,15 @@ execute_choice() {
         49) curl -fsSL https://raw.githubusercontent.com/iu683/app-store/main/vpsdocker.sh -o vpsdocker.sh && chmod +x vpsdocker.sh && ./vpsdocker.sh ;;
         50) curl -fsSL https://raw.githubusercontent.com/eooce/ssh_tool/main/ssh_tool.sh -o ssh_tool.sh && chmod +x ssh_tool.sh && ./ssh_tool.sh ;;
         51) curl -sS -O https://kejilion.pro/kejilion.sh && chmod +x kejilion.sh && ./kejilion.sh ;;
-        52) curl -sSL https://yidian.icu/ty.sh -o ty.sh && chmod +x ty.sh && ./ty.sh ;;
-        53) curl -sSL https://raw.githubusercontent.com/iu683/vps-tools/main/optimize.sh -o optimize.sh && chmod +x optimize.sh && ./optimize.sh ;;
-        54) curl -fsSL https://raw.githubusercontent.com/iu683/vps-tools/main/vps-toolkit.sh -o vps-toolkit.sh && chmod +x vps-toolkit.sh && ./vps-toolkit.sh ;;
+        52) wget -O 1keji.sh "https://www.1keji.net" && chmod +x 1keji.sh && ./1keji.sh ;;
+        53) bash <(curl -sL ss.hide.ss) ;;
+        54) bash <(curl -sSL https://raw.githubusercontent.com/zeyu8023/vps_toolkit/main/install.sh) ;;
         55) curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose ;;
-        56) bash <(curl -fsSL https://raw.githubusercontent.com/iu683/vps-tools/main/docker-backup.sh) ;;
-        57) bash <(curl -fsSL https://raw.githubusercontent.com/iu683/vps-tools/main/docker-migrate.sh) ;;
+        56) curl -fsSL https://raw.githubusercontent.com/xymn2023/DMR/main/docker_back.sh -o docker_back.sh && chmod +x docker_back.sh && ./docker_back.sh ;;
+        57) curl -sL https://raw.githubusercontent.com/ceocok/Docker_container_migration/refs/heads/main/Docker_container_migration.sh -o Docker_container_migration.sh && chmod +x Docker_container_migration.sh && ./Docker_container_migration.sh ;;
         58) bash <(curl -sL https://raw.githubusercontent.com/iu683/vps-tools/main/Docker.sh) ;;
-        59) bash <(curl -fsSL https://raw.githubusercontent.com/iu683/vps-tools/main/manage_nginx.sh) ;;
-        60) bash <(curl -fsSL https://raw.githubusercontent.com/1keji/AddIPv6/main/manage_nginx.sh) ;;
-        61) bash <(curl -fsSL https://raw.githubusercontent.com/1keji/AddIPv6/main/manage_nginx_v6.sh) ;;
+        59) bash <(curl -fsSL https://raw.githubusercontent.com/1keji/AddIPv6/main/manage_nginx.sh) ;;
+        60) bash <(curl -fsSL https://raw.githubusercontent.com/1keji/AddIPv6/main/manage_nginx_v6.sh) ;;
         88)
             echo -e "${yellow}正在更新脚本...${reset}"
             # 下载最新版本覆盖本地脚本
